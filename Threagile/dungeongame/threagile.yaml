@@ -1,0 +1,113 @@
+title: "Threat Model for Dungeon Game REST Service"
+author:
+  name: "Automated Analysis"
+
+data_assets:
+  dungeon_game_records:
+    id: dungeon_game_records
+    description: "Stores the input dungeon layouts and their calculated results."
+    usage: In-Scope
+    tags:
+      - game-data
+    origin: "Dungeon Game API"
+    owner: "Application Team"
+    quantity: Many
+    confidentiality: confidential
+    integrity: critical
+    availability: critical
+
+technical_assets:
+  web_client:
+    id: web_client
+    description: "Any external client (e.g., curl, Postman, web browser) calling the API."
+    type: external-entity
+    usage: Out-Of-Scope
+    used_as_client_by_technical_assets:
+      - dungeon_api
+    tags:
+      - client
+    technology: web-browser
+    internet: true
+    machine: client
+
+  dungeon_api:
+    id: dungeon_api
+    description: "The Java 23 Spring Boot REST API that solves the game."
+    type: process
+    usage: In-Scope
+    tags:
+      - java-app
+      - spring-boot
+    technology: application-server
+    internet: false
+    machine: application-server
+    size: component
+    confidentiality: confidential
+    integrity: critical
+    availability: critical
+    communication_links:
+      json_over_https:
+        target: web_client
+        description: "API call to calculate minimum health"
+        protocol: https
+        authentication: none
+        authorization: none
+        data_assets_sent:
+          - dungeon_game_records
+        data_assets_received:
+          - dungeon_game_records
+    communication_links:
+      jdbc_connection:
+        target: dungeon_db
+        description: "Stores and retrieves game results"
+        protocol: jdbc
+        authentication: technical
+        authorization: none
+        data_assets_sent:
+          - dungeon_game_records
+        data_assets_received:
+          - dungeon_game_records
+
+  dungeon_db:
+    id: dungeon_db
+    description: "PostgreSQL database for storing game records."
+    type: datastore
+    usage: In-Scope
+    tags:
+      - database
+      - postgresql
+    technology: database
+    internet: false
+    machine: database-server
+    size: database
+    confidentiality: confidential
+    integrity: critical
+    availability: critical
+
+trust_boundaries:
+  internet_boundary:
+    id: internet_boundary
+    description: "The public internet, where clients reside."
+    type: network-untrusted
+    technical_assets_inside:
+      - web_client
+    trust_boundaries_nested:
+      - docker_network_boundary
+
+  docker_network_boundary:
+    id: docker_network_boundary
+    description: "The internal Docker network that isolates the application and database."
+    type: network-virtual
+    technical_assets_inside:
+      - dungeon_api
+      - dungeon_db
+
+shared_runtimes:
+  docker_environment:
+    id: docker_environment
+    description: "The Docker host environment where all containers run."
+    technical_assets_running:
+      - dungeon_api
+      - dungeon_db
+
+individual_risk_categories: {}
