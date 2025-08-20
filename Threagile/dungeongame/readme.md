@@ -121,6 +121,10 @@ curl -X POST http://localhost:8080/api/dungeon/calculate
 
 ```
 
+## DEMO
+
+https://github.com/user-attachments/assets/3daa443c-a539-41e4-b34a-e58975a94109
+
 ## Automated Threat Modeling with Threagile
 
 This project uses [Threagile](https://threagile.io/) for automated threat modeling as code. The entire architecture is defined in the `threagile.yaml` file.
