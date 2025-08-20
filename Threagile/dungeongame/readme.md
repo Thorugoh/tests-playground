@@ -139,6 +139,17 @@ threagile/threagile -verbose -model /app/work/threagile.yaml
 
 ```
 
+Win:
+
+```
+docker run --rm -it `
+  -v "${PWD}:/app/work" `
+  threagile/threagile `
+  -verbose `
+  -model /app/work/threagile.yaml
+
+```
+
 This command will:
 
 - Download the Threagile Docker image.

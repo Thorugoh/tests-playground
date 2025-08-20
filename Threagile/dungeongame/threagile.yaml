@@ -2,20 +2,21 @@ title: "Threat Model for Dungeon Game REST Service"
 author:
   name: "Automated Analysis"
 
+business_criticality: critical
+
 data_assets:
   dungeon_game_records:
-    id: dungeon_game_records
+    id: dungeon-game-records
     description: "Stores the input dungeon layouts and their calculated results."
-    usage: In-Scope
     tags:
       - game-data
     origin: "Dungeon Game API"
     owner: "Application Team"
-    quantity: Many
+    quantity: many
     confidentiality: confidential
     integrity: critical
     availability: critical
-
+    usage: business
 technical_assets:
   web_client:
     id: web_client
@@ -56,7 +57,6 @@ technical_assets:
           - dungeon_game_records
         data_assets_received:
           - dungeon_game_records
-    communication_links:
       jdbc_connection:
         target: dungeon_db
         description: "Stores and retrieves game results"
