@@ -165,3 +165,7 @@ This command will:
 - Run the analysis against your `threagile.yaml` file.
 
 Upon completion, Threagile will create a `threagile-report` folder in your project directory containing a detailed HTML report, data-flow diagrams, and other analysis artifacts.
+
+## DEMO THREAGILE
+
+https://github.com/user-attachments/assets/b2c42581-1563-4ba9-9fa9-0879d61bed47
