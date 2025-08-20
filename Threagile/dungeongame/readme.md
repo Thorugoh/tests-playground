@@ -150,7 +150,9 @@ docker run --rm -it `
   -v "${PWD}:/app/work" `
   threagile/threagile `
   -verbose `
-  -model /app/work/threagile.yaml
+  -model /app/work/threagile.yaml `
+  -generate-risks-excel=false `
+  -output /app/work
 
 ```
 
