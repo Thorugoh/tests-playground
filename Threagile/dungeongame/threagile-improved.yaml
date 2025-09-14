@@ -1,0 +1,157 @@
+threagile_version: 1.0.0
+
+title: "Threat Model for Dungeon Game REST Service"
+date: "2025-08-20"
+
+author:
+  name: "Yellow Team"
+
+business_criticality: critical
+
+management_summary_comment: >
+  This threat model describes a simple REST service for solving the Dungeon Game problem.
+  The service is containerized and consists of a Java backend and a PostgreSQL database.
+  The primary assets are the game records stored in the database.
+
+tags_available:
+  - java
+  - spring-boot
+  - postgresql
+  - docker
+  - web-client
+  - game-data
+
+data_assets:
+  dg-rec:
+    id: dg-rec
+    description: "Stores the input dungeon layouts and their calculated results."
+    usage: business
+    tags:
+      - game-data
+    origin: "Dungeon Game API"
+    owner: "Application Team"
+    quantity: many
+    confidentiality: confidential
+    integrity: critical
+    availability: critical
+    justification_cia_rating: >
+      Game records might be considered user-inputted data. The integrity of the results is critical for the service's function.
+
+technical_assets:
+  web-client:
+    id: web-client
+    description: "Any external client (e.g., curl, Postman, web browser) calling the API."
+    type: external-entity
+    usage: business
+    technology: browser
+    tags:
+      - web-client
+    internet: true
+    machine: physical
+    encryption: none
+    size: component
+    owner: "End User"
+    out_of_scope: true
+    justification_out_of_scope: "The client is owned and managed by the end-user."
+    confidentiality: public
+    integrity: operational
+    availability: operational
+    justification_cia_rating: "The client is out of scope and managed by the end-user."
+    communication_links:
+      api-call:
+        target: dungeon-api
+        description: "API call to calculate minimum health"
+        protocol: https
+        authentication: none
+        authorization: none
+        usage: business
+        data_assets_sent:
+          - dg-rec
+        data_assets_received:
+          - dg-rec
+
+  dungeon-api:
+    id: dungeon-api
+    description: "The Java 23 Spring Boot REST API that solves the game."
+    type: process
+    usage: business
+    technology: application-server
+    tags:
+      - java
+      - spring-boot
+      - docker
+    internet: false
+    machine: container
+    encryption: none
+    size: component
+    owner: "Application Team"
+    custom_developed_parts: true
+    confidentiality: confidential
+    integrity: critical
+    availability: critical
+    justification_cia_rating: "The API processes all data and is the core of the service."
+    data_assets_processed:
+      - dg-rec
+    communication_links:
+      jdbc-connection:
+        target: dungeon-db
+        description: "Stores and retrieves game results"
+        protocol: jdbc
+        authentication: none
+        authorization: none
+        usage: business
+        data_assets_sent:
+          - dg-rec
+        data_assets_received:
+          - dg-rec
+
+  dungeon-db:
+    id: dungeon-db
+    description: "PostgreSQL database for storing game records."
+    type: datastore
+    usage: business
+    technology: database
+    tags:
+      - postgresql
+      - docker
+    internet: false
+    machine: container
+    encryption: transparent
+    size: component
+    owner: "Application Team"
+    confidentiality: confidential
+    integrity: critical
+    availability: critical
+    justification_cia_rating: "The database stores all sensitive game records."
+    data_assets_stored:
+      - dg-rec
+
+trust_boundaries:
+  internet-boundary:
+    id: internet-boundary
+    description: "The public internet, where clients reside."
+    type: network-cloud-security-group
+    technical_assets_inside:
+      - web-client
+    trust_boundaries_nested:
+      - docker-net
+
+  docker-net:
+    id: docker-net
+    description: "The internal Docker network that isolates the application and database."
+    type: network-cloud-security-group
+    technical_assets_inside:
+      - dungeon-api
+      - dungeon-db
+
+shared_runtimes:
+  docker-environment:
+    id: docker-environment
+    description: "The Docker host environment where all containers run."
+    technical_assets_running:
+      - dungeon-api
+      - dungeon-db
+
+individual_risk_categories: {}
+
+risk_tracking: {}
